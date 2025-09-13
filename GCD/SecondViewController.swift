@@ -18,7 +18,7 @@ class SecondViewController: UIViewController {
             return imageView.image
         }
         set {
-            activityIndicato.startAnimating()
+            activityIndicato.stopAnimating()
             activityIndicato.isHidden = true
             
             imageView.image = newValue
@@ -36,8 +36,13 @@ fileprivate func fetchImage() {
         imageURL = URL(string: "https://i02.appmifile.com/images/2018/04/01/c4d24020-5e96-4ff2-9d44-9d8a24327f87.png")
     activityIndicato.isHidden = false
     activityIndicato.startAnimating()
-    guard let url = imageURL, let imageData = try? Data(contentsOf: url) else
-    { return }
-    self.image = UIImage(data: imageData)
+    
+    let queue = DispatchQueue.global(qos: .utility)
+    queue.async { [self] in
+        guard let url = imageURL, let imageData = try? Data(contentsOf: url) else { return }
+        DispatchQueue.main.async {
+            self.image = UIImage(data: imageData)
+           }
+         }
       }
     }
